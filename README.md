@@ -1,2 +1,0 @@
-# MyWeiChat
-HOPE
