@@ -1,0 +1,53 @@
+<resources>
+
+    <!--
+        Base application theme, dependent on API level. This theme is replaced
+        by AppBaseTheme from res/values-vXX/styles.xml on newer devices.
+    -->
+    <style name="AppBaseTheme" parent="Theme.AppCompat.Light">
+        <!--
+            Theme customizations available in newer API levels can go in
+            res/values-vXX/styles.xml, while customizations related to
+            backward-compatibility can go here.
+        -->
+    </style>
+
+    <!-- Application theme. -->
+    <style name="AppTheme" parent="AppBaseTheme">
+        <!-- All customizations that are NOT specific to a particular API-level can go here. -->
+    </style>
+    
+    <style name="MyWeiChatD" >
+        <item name="android:windowShowWallpaper">true</item>                                <!--启动由远及近，结束由小变大 -->
+        <item name="android:windowBackground">@android:drawable/screen_background_light_transparent</item>
+        <item name="android:colorBackgroundCacheHint">@android:color/black</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowFullscreen">true</item>
+    </style>
+    
+    <style name="MyWeiChatN" >
+        <item name="android:windowBackground">@android:drawable/screen_background_dark_transparent</item>
+        <item name="android:colorBackgroundCacheHint">@android:color/black</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowFullscreen">true</item>
+    </style>
+    
+    <style name="NightText">
+        <item name="android:textColor">@color/white</item>            <!--白字-->
+    </style>
+    <style name="DailyText">
+        <item name="android:textColor">@color/black</item>            <!--黑字-->
+    </style>
+    <style name="NightUserText">
+        <item name="android:textColor">@color/title_style_night</item>            <!--灰字-->
+    </style>
+    <style name="DailyUserText">
+        <item name="android:textColor">@color/title_style_daily</item>            <!--蓝字-->
+    </style>
+    <style name="BottomButtonOff">
+        <item name="android:textColor">@color/bottombutton_off</item>            
+    </style>
+    <style name="BottonButtonOn">
+        <item name="android:textColor">@color/bottombutton_on</item>            
+    </style>
+</resources>
