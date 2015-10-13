@@ -6,6 +6,7 @@ import java.util.List;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -14,21 +15,27 @@ import android.support.v4.view.ViewPager;
 import android.support.v4.view.ViewPager.OnPageChangeListener;
 import android.support.v4.widget.DrawerLayout;
 import android.util.DisplayMetrics;
+import android.view.GestureDetector.OnGestureListener;
 import android.view.Gravity;
 import android.view.KeyEvent;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.View.OnTouchListener;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.view.animation.Animation.AnimationListener;
+import android.view.GestureDetector;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.Toast;
 
-public class MainActivity extends FragmentActivity implements OnClickListener,TitleF.Switchdorn,TitleF.UserDetail,DrawerLayout.DrawerListener,OnPageChangeListener{
+public class MainActivity extends FragmentActivity implements OnClickListener,TitleF.Switchdorn,TitleF.UserDetail,DrawerLayout.DrawerListener,OnPageChangeListener,OnGestureListener,OnTouchListener{
 	private AddressBookF ABF;
 	private DiscoveryF DF;
 	private WeiChatF WCF;
 	private MEF MEF;
+	GestureDetector mGestureDetector; 
 	private ViewPager mViewPager;
 	private BottomButton bbme,bbd,bbab,bbwc;
 	private PageAdapter mPageAdapter;
@@ -48,6 +55,7 @@ public class MainActivity extends FragmentActivity implements OnClickListener,Ti
 		initTitleF();
 		initComponent();
 		initViewPager();
+		mGestureDetector = new GestureDetector((OnGestureListener) this);
 		Intent sthstate = getIntent();
 		if(Utils.ButtonState != 0 && sthstate.getStringExtra("BottomButton") != null){
 			if(Integer.parseInt(sthstate.getStringExtra("BottomButton")) != 0)
@@ -99,8 +107,10 @@ public class MainActivity extends FragmentActivity implements OnClickListener,Ti
 		mViewPager = (ViewPager) findViewById(R.id.fragment);
         mPageAdapter = new PageAdapter(getSupportFragmentManager(), LF);
 		mViewPager.setAdapter(mPageAdapter);
-		mViewPager .setOffscreenPageLimit(3);//保存相邻3页
+		mViewPager.setOffscreenPageLimit(3);//保存相邻3页
 		mViewPager.setOnPageChangeListener(this);
+		mViewPager.setLongClickable(true); 
+		mViewPager.setOnTouchListener(this);
 	}
 	
 	protected void ReadytoRefresh(int rstate,final int id){
@@ -289,14 +299,11 @@ public class MainActivity extends FragmentActivity implements OnClickListener,Ti
 
 	@Override
 	public void onDrawerClosed(View arg0) {
-		// TODO Auto-generated method stub
 		for(LinearLayout ll:UserDetail.lvll)
 			ll.setVisibility(View.GONE);
 	}
 	@Override
 	public void onDrawerOpened(View arg0) {
-		// TODO Auto-generated method stub
-		//UserDetail.animationDrawable.start();
 		for(LinearLayout ll:UserDetail.lvll)
 			ll.setVisibility(View.VISIBLE);
 		UserDetail.startanim();
@@ -310,17 +317,43 @@ public class MainActivity extends FragmentActivity implements OnClickListener,Ti
 	
 	@Override
 	public void onPageScrollStateChanged(int arg0) {
-		// TODO Auto-generated method stub
 		if(arg0 == 2 && mViewPager.getCurrentItem() != state)
 			ReadytoRefresh(mViewPager.getCurrentItem(),returnId(mViewPager.getCurrentItem()));
 	}
 	@Override
 	public void onPageScrolled(int arg0, float arg1, int arg2) {
-		// TODO Auto-generated method stub
 	}
 	@Override
 	public void onPageSelected(int arg0) {
-		// TODO Auto-generated method stub
 		state = arg0;
+	}
+
+	@Override
+	public boolean onDown(MotionEvent e) {
+		return false;
+	}
+	@Override
+	public void onShowPress(MotionEvent e) {
+	}
+	@Override
+	public boolean onSingleTapUp(MotionEvent e) {
+		return false;
+	}
+	@Override
+	public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX,
+			float distanceY){
+		return false;
+	}
+	@Override
+	public void onLongPress(MotionEvent e) {
+	}
+	@Override
+	public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX,
+			float velocityY) {
+		return false;
+	}
+	@Override
+	public boolean onTouch(View v, MotionEvent event) {
+		return mGestureDetector.onTouchEvent(event);
 	}
 }
