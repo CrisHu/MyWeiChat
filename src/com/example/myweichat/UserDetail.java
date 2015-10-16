@@ -51,7 +51,6 @@ public class UserDetail extends LinearLayout implements OnClickListener,OnTouchL
         imageviewbili = (ImageView)findViewById(R.id.littletv);
         imageviewbili.setOnTouchListener(this);
         imageviewbili.setBackgroundResource(R.drawable.bili_up);
-        imageviewbili.clearAnimation();
 //        set22or33open();
 //        imageview.setBackgroundResource(R.drawable.default_user);
 //        imageview.setBackgroundResource(R.anim.jumptv);

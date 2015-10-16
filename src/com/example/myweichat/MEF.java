@@ -37,7 +37,6 @@ public class MEF extends Fragment implements OnItemClickListener{
     public View onCreateView(LayoutInflater inflater, ViewGroup container,  
             Bundle savedInstanceState)  
     {   
-//    	if (null == view){
     	for(int i = 0,j=0;i < 3;i++){
 			ArrayList<String> a = new ArrayList<String>();
     		for(;;j++){
@@ -59,7 +58,6 @@ public class MEF extends Fragment implements OnItemClickListener{
         lv.setAdapter(adapter);
         lv.setOnItemClickListener(this);
 		lv.setDividerHeight(1);
-//    	}
         return view;  
     }  
     
@@ -228,9 +226,6 @@ public class MEF extends Fragment implements OnItemClickListener{
 			}
 			setopen(no,1);
 			animation(viewList,time,0,1);
-//			for(int j = 1;j < open.length;j++){
-//				if(j != no && open[j] == 1)doandrefresh(j);
-//			}
 		}
 		else{
 			for(int i = 0;i < invisible.size();i++){
@@ -269,22 +264,6 @@ public class MEF extends Fragment implements OnItemClickListener{
 		{
         	viewList.get(index).setVisibility(View.GONE);
         	animation(viewList,time+100,index-1,opstate);
-//			funcitemanim = AnimationUtils.loadAnimation(this.view.getContext(),R.anim.list_item_disappearance); 
-//			funcitemanim.setDuration(time);
-//			viewList.get(index).startAnimation(funcitemanim);
-//			funcitemanim.setAnimationListener(new AnimationListener() {  
-//	            @Override  
-//	            public void onAnimationStart(Animation animation) {
-//	            	animation(viewList,time+100,index-1,opstate);
-//	            } 
-//	            @Override  
-//	            public void onAnimationRepeat(Animation animation) {  
-//	            }  
-//	            @Override  
-//	            public void onAnimationEnd(Animation animation) {
-//	            	viewList.get(index).setVisibility(View.GONE);
-//	            }  
-//	        });
 		}
 	}
 }  

@@ -25,24 +25,29 @@ import android.view.View.OnTouchListener;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.view.animation.Animation.AnimationListener;
+import android.view.animation.TranslateAnimation;
 import android.view.GestureDetector;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.Toast;
+import android.widget.RelativeLayout;
 
 public class MainActivity extends FragmentActivity implements OnClickListener,TitleF.Switchdorn,TitleF.UserDetail,DrawerLayout.DrawerListener,OnPageChangeListener,OnGestureListener,OnTouchListener{
 	private AddressBookF ABF;
 	private DiscoveryF DF;
 	private WeiChatF WCF;
 	private MEF MEF;
-	GestureDetector mGestureDetector; 
+	private GestureDetector mGestureDetector; 
+	private RelativeLayout refresh;
 	private ViewPager mViewPager;
 	private BottomButton bbme,bbd,bbab,bbwc;
 	private PageAdapter mPageAdapter;
 	private DrawerLayout userDetail = null;
 	private UserDetail userdetail;
+	private DisplayMetrics dm;
+	private int window_width,window_height,refresh_height;
+	private int defaultheight = 200,maxheight = 1500;//触发刷新所需要的最小滑动距离/最大可接受滑动距离
 	private List<Fragment> LF = new ArrayList<Fragment>();
-	private int state = 0,firstanim = 0;
+	private int state = 0,firstanim = 0,freshisanimating = 0,canrefresh = 1;
 	private int[] img = {R.drawable.weixin,R.drawable.addressbook,R.drawable.discovery,R.drawable.app};
 	private int[] imgon = {R.drawable.onweixin,R.drawable.onaddressbook,R.drawable.ondiscovery,R.drawable.onapp};
 	
@@ -52,6 +57,10 @@ public class MainActivity extends FragmentActivity implements OnClickListener,Ti
 		Utils.onActivityCreateSetTheme(this);  
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
+		dm = new DisplayMetrics();
+		getWindowManager().getDefaultDisplay().getMetrics(dm);
+		window_width = dm.widthPixels;
+		window_height = dm.heightPixels;
 		initTitleF();
 		initComponent();
 		initViewPager();
@@ -60,7 +69,6 @@ public class MainActivity extends FragmentActivity implements OnClickListener,Ti
 		if(Utils.ButtonState != 0 && sthstate.getStringExtra("BottomButton") != null){
 			if(Integer.parseInt(sthstate.getStringExtra("BottomButton")) != 0)
 				firstanim = 1;
-//			onPageSelected(Integer.parseInt(sthstate.getStringExtra("BottomButton")));
 			onClick(findViewById(returnId(Integer.parseInt(sthstate.getStringExtra("BottomButton")))));
 		}
 	}
@@ -86,6 +94,10 @@ public class MainActivity extends FragmentActivity implements OnClickListener,Ti
         LF.add(ABF);
         LF.add(DF);
         LF.add(MEF);
+	    refresh = (RelativeLayout)findViewById(R.id.refresh);
+	    refresh.setVisibility(View.INVISIBLE);
+	    refresh.getLayoutParams().height=(int) (1.2*window_height/13.4);
+	    refresh_height = refresh.getLayoutParams().height;
 	}
 	
 	protected void initTitleF(){
@@ -94,9 +106,6 @@ public class MainActivity extends FragmentActivity implements OnClickListener,Ti
 		userDetail = (DrawerLayout) findViewById(R.id.userdetail);
 		userDetail.setDrawerListener(this);
 		findViewById(R.id.userdetaildrawer).setBackgroundResource(R.color.black_alittle_trans);
-		DisplayMetrics dm = new DisplayMetrics();
-		getWindowManager().getDefaultDisplay().getMetrics(dm);
-		int window_width = dm.widthPixels;
 		userdetail = (UserDetail)findViewById(R.id.userdetaildrawer);
 		userdetail.getLayoutParams().width=5*window_width/7;
 		userdetail.setOnClickListener(this);
@@ -115,6 +124,9 @@ public class MainActivity extends FragmentActivity implements OnClickListener,Ti
 	
 	protected void ReadytoRefresh(int rstate,final int id){
 		if(rstate != 3)MEF.closeAll();
+		refresh.clearAnimation();
+		refresh.setVisibility(View.INVISIBLE);
+		freshisanimating = 0;
 		mViewPager.setCurrentItem(rstate,false);
 		StyleController.setobjectsrc(findViewById(id),getResources().getDrawable(imgon[rstate]));
 		StyleController.setobjectsrc(findViewById(id),R.style.BottonButtonOn);
@@ -218,6 +230,138 @@ public class MainActivity extends FragmentActivity implements OnClickListener,Ti
 		else finish();
 		return false;
 	}
+	
+	public void setUserDetailDrawer(UserDetail ud){
+		if(Utils.sTheme == 2){
+			StyleController.setobjectsrc(ud, R.color.title_style_night);
+			}
+		else{
+			StyleController.setobjectsrc(ud, R.color.title_style_daily);
+			}
+	}
+	public void setSwitchButton(ImageView iv){
+		if(Utils.sTheme == 2)
+			StyleController.setobjectsrc(iv, getResources().getDrawable(R.drawable.switchtodaily));
+		else
+			StyleController.setobjectsrc(iv, getResources().getDrawable(R.drawable.switchtonight));
+	}
+
+	public void doActionUp(){
+		if(refresh.getTop() > 200){
+			canrefresh = 0;
+			freshisanimating = 1;
+			TranslateAnimation backto200 = new TranslateAnimation(0,0,0,200 - refresh.getTop()); //相对当前的位置什么的
+			backto200.setDuration(200);
+			final Animation rotate = AnimationUtils.loadAnimation(this,R.anim.refresh); 
+			refresh.startAnimation(backto200);
+			backto200.setAnimationListener(new AnimationListener(){
+				@Override
+				public void onAnimationEnd(Animation animation)
+				{
+					refresh.layout(refresh.getLeft(),200,refresh.getRight(),200 + refresh_height);
+					refresh.clearAnimation();
+					refresh.startAnimation(rotate);
+				}
+				@Override
+				public void onAnimationRepeat(Animation animation)
+				{
+				}
+				@Override
+				public void onAnimationStart(Animation animation)
+				{
+				}
+			});
+			rotate.setAnimationListener(new AnimationListener(){
+				@Override
+				public void onAnimationEnd(Animation animation)
+				{
+					refresh.clearAnimation();
+					refresh.setVisibility(View.INVISIBLE);
+					freshisanimating = 0;
+				}
+				@Override
+				public void onAnimationRepeat(Animation animation)
+				{
+				}
+				@Override
+				public void onAnimationStart(Animation animation)
+				{
+					//刷新代码
+				}
+			});
+			return;
+		}
+		if(refresh.getTop() != 0 && canrefresh == 1){
+			canrefresh = 0;
+			freshisanimating = 1;
+			int sparerefreshheight = refresh.getTop();
+			TranslateAnimation showAnim = new TranslateAnimation(0,0,sparerefreshheight,0);
+			refresh.layout(refresh.getLeft(),0,refresh.getRight(),refresh_height);
+			showAnim.setDuration(300*Math.abs(sparerefreshheight)/refresh_height);
+			refresh.startAnimation(showAnim);
+			showAnim.setAnimationListener(new AnimationListener(){
+				@Override
+				public void onAnimationEnd(Animation animation)
+				{
+					refresh.clearAnimation();
+					refresh.setVisibility(View.INVISIBLE);
+					freshisanimating = 0;
+				}
+				@Override
+				public void onAnimationRepeat(Animation animation)
+				{
+				}
+				@Override
+				public void onAnimationStart(Animation animation)
+				{
+				}
+			});
+		}
+	}
+	public void doActionDown(){
+		if(freshisanimating == 0)
+			canrefresh = 1;
+	}
+	public void dorefresh(int dis){
+		  if(canrefresh == 1){
+			  dis = (int) Math.sqrt((maxheight * maxheight - Math.pow((dis - defaultheight - maxheight),2)))/5;
+			  refresh.layout(refresh.getLeft(),dis, refresh.getRight(),dis + refresh_height);
+		  }
+	}
+	
+	@Override
+	public void switchdorn() {
+		// TODO Auto-generated method stub
+		if(Utils.sTheme == 2){
+		   StyleController.setobjectsrc(TitleF.IB, getResources().getDrawable(R.drawable.switchtodaily));
+		   Utils.sTheme = 1;
+		}
+		else{
+			StyleController.setobjectsrc(TitleF.IB, getResources().getDrawable(R.drawable.switchtonight));
+			Utils.sTheme = 2; 
+		}
+		
+		try {
+			JSONObject JSONconfig = new JSONObject();
+			JSONconfig.put("theme",Utils.sTheme);
+			new WROperation(this).writeSDFile(JSONconfig.toString());
+			Utils.changeToTheme(this,Utils.sTheme,state);
+		} catch (IOException | JSONException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	@Override
+	public void userDetail() {
+		// TODO Auto-generated method stub
+		refresh.clearAnimation();
+		refresh.setVisibility(View.INVISIBLE);
+		freshisanimating = 0;
+		Animation userdetaillistanim = AnimationUtils.loadAnimation(this,R.anim.user_detail_drawer_apperance); 
+		userdetaillistanim.setDuration(500);
+		findViewById(R.id.userdetaildrawer).startAnimation(userdetaillistanim);
+		userDetail.openDrawer(Gravity.LEFT);
+	}
 
 	@Override
 	public void onClick(View v) {
@@ -249,54 +393,6 @@ public class MainActivity extends FragmentActivity implements OnClickListener,Ti
 		}
 	}
 	
-	@Override
-	public void switchdorn() {
-		// TODO Auto-generated method stub
-		if(Utils.sTheme == 2){
-		   StyleController.setobjectsrc(TitleF.IB, getResources().getDrawable(R.drawable.switchtodaily));
-		   Utils.sTheme = 1;
-		}
-		else{
-			StyleController.setobjectsrc(TitleF.IB, getResources().getDrawable(R.drawable.switchtonight));
-			Utils.sTheme = 2; 
-		}
-		
-		try {
-			JSONObject JSONconfig = new JSONObject();
-			JSONconfig.put("theme",Utils.sTheme);
-			new WROperation(this).writeSDFile(JSONconfig.toString());
-			Utils.changeToTheme(this,Utils.sTheme,state);
-		} catch (IOException | JSONException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
-
-	@Override
-	public void userDetail() {
-		// TODO Auto-generated method stub
-		Animation userdetaillistanim; 
-		userdetaillistanim = AnimationUtils.loadAnimation(this,R.anim.user_detail_drawer_apperance); 
-		userdetaillistanim.setDuration(500);
-		findViewById(R.id.userdetaildrawer).startAnimation(userdetaillistanim);
-		userDetail.openDrawer(Gravity.LEFT);
-	}
-	
-	public void setUserDetailDrawer(UserDetail ud){
-		if(Utils.sTheme == 2){
-			StyleController.setobjectsrc(ud, R.color.title_style_night);
-			}
-		else{
-			StyleController.setobjectsrc(ud, R.color.title_style_daily);
-			}
-	}
-	public void setSwitchButton(ImageView iv){
-		if(Utils.sTheme == 2)
-			StyleController.setobjectsrc(iv, getResources().getDrawable(R.drawable.switchtodaily));
-		else
-			StyleController.setobjectsrc(iv, getResources().getDrawable(R.drawable.switchtonight));
-	}
-
 	@Override
 	public void onDrawerClosed(View arg0) {
 		for(LinearLayout ll:UserDetail.lvll)
@@ -342,6 +438,8 @@ public class MainActivity extends FragmentActivity implements OnClickListener,Ti
 	@Override
 	public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX,
 			float distanceY){
+		refresh.setVisibility(View.VISIBLE);
+		dorefresh((int)(e2.getY() - e1.getY()));
 		return false;
 	}
 	@Override
@@ -354,6 +452,11 @@ public class MainActivity extends FragmentActivity implements OnClickListener,Ti
 	}
 	@Override
 	public boolean onTouch(View v, MotionEvent event) {
+		if(event.getAction() == MotionEvent.ACTION_DOWN)
+			doActionDown();
+		if(event.getAction() == MotionEvent.ACTION_UP){
+			doActionUp();
+        }
 		return mGestureDetector.onTouchEvent(event);
 	}
 }
