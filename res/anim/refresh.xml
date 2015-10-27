@@ -6,24 +6,24 @@
 	    android:pivotX="50%"  
 	    android:pivotY="50%"   
 	    android:fillAfter="true"
-     	android:duration="1500">  
+     	android:duration="500">  
 	</rotate> 
 	<alpha 
 	    android:fromAlpha="10.0"  
-	    android:toAlpha="0.5"  
+	    android:toAlpha="5"  
 	    android:fillBefore="true"
-	    android:duration="750">  
+	    android:duration="250">  
 	</alpha>  
 	<alpha 
-	    android:fromAlpha="0.5"  
+	    android:fromAlpha="5"  
 	    android:toAlpha="10.0"  
 	    android:fillBefore="true"
-	    android:duration="750"
-	    android:startOffset="750">  
+	    android:duration="250"
+	    android:startOffset="250">  
 	</alpha> 
 	<translate
-	    android:startOffset="1500" 
-	    android:duration="750" 
+	    android:startOffset="500" 
+	    android:duration="250" 
 	    android:fromYDelta="0" 
 	    android:toYDelta="-200" >
 	</translate>

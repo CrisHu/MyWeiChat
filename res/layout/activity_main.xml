@@ -1,21 +1,9 @@
-<AbsoluteLayout 
+<LinearLayout 
     xmlns:tools="http://schemas.android.com/tools"
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
-	<RelativeLayout
-        android:id="@+id/refresh"
-        android:layout_width="match_parent"
-        android:layout_height="100px"
-        android:layout_x="0dp"
-        android:layout_y="0px" 
-        android:gravity="center"  >
-        <ImageView
-            android:id="@+id/refreshiv"
-            android:layout_width="wrap_content"  
-        	android:layout_height="wrap_content"
-        	android:src="@drawable/app"/>
-	</RelativeLayout>
+    android:layout_height="match_parent"
+    android:orientation="vertical">
     <android.support.v4.widget.DrawerLayout
         android:id="@+id/userdetail"
         android:layout_width="match_parent"
@@ -25,45 +13,58 @@
 		    android:layout_width="match_parent"
 		    android:layout_height="match_parent"
 		    android:orientation="vertical">
-			<fragment
-			    android:id="@+id/fragmenttitle"
-		   	    android:name="com.example.myweichat.TitleF"
-			    android:layout_width="match_parent"
+		    <AbsoluteLayout
+		        android:layout_width="match_parent"
 			    android:layout_height="0dp"
-			    android:layout_weight="1.2"
-			    android:gravity="top"
-			    />
-			<android.support.v4.view.ViewPager
-		        android:id="@+id/fragment"
-			    android:layout_width="match_parent"
-			    android:layout_height="0dp"
-			    android:layout_weight="11" />  
+			    android:layout_weight="12.2">
+				<RelativeLayout
+			        android:id="@+id/refresh"
+			        android:layout_width="match_parent"
+			        android:layout_height="match_parent"
+			        android:layout_x="0px"
+			        android:layout_y="0px" 
+			        android:gravity="center"  >
+			        <ImageView
+			            android:id="@+id/refreshiv"
+			            android:layout_width="wrap_content"  
+			        	android:layout_height="wrap_content"
+			        	android:src="@drawable/app"/>
+				</RelativeLayout>
+				<fragment
+				    android:id="@+id/fragmenttitle"
+			   	    android:name="com.example.myweichat.mainfragment.TitleF"
+				    android:layout_width="match_parent"
+				    android:layout_height="match_parent"/>
+				<android.support.v4.view.ViewPager
+			        android:id="@+id/fragment"
+				    android:layout_width="match_parent"
+				    android:layout_height="match_parent" />
+			</AbsoluteLayout>  
 			<LinearLayout
 			    android:layout_width="match_parent"
 			    android:layout_height="0dp"
 			    android:layout_weight="1.2"
 			    android:orientation="horizontal"
 			    android:gravity="bottom">
-			        
-			    <com.example.myweichat.BottomButton
+			    <com.example.myweichat.component.BottomButton
 			        android:id="@+id/bbwc"
 			        android:layout_width="0dp"
 			        android:layout_height="match_parent"
 			        android:layout_weight="1"
 			        />
-			    <com.example.myweichat.BottomButton
+			    <com.example.myweichat.component.BottomButton
 			        android:id="@+id/bbab"
 			        android:layout_width="0dp"
 			        android:layout_height="match_parent"
 			        android:layout_weight="1"
 			        />
-			    <com.example.myweichat.BottomButton
+			    <com.example.myweichat.component.BottomButton
 			        android:id="@+id/bbd"
 			        android:layout_width="0dp"
 			        android:layout_height="match_parent"
 			        android:layout_weight="1"
 			        />
-			    <com.example.myweichat.BottomButton
+			    <com.example.myweichat.component.BottomButton
 			        android:id="@+id/bbme"
 			        android:layout_width="0dp"
 			        android:layout_height="match_parent"
@@ -73,10 +74,10 @@
 		 </LinearLayout>
 	     <!-- The navigation drawer -->
 
-	     <com.example.myweichat.UserDetail
+	     <com.example.myweichat.component.UserDetail
 	         android:id="@+id/userdetaildrawer"
 	         android:layout_width="200dp"
 	         android:layout_height="match_parent"
 	         android:layout_gravity="start"/>
     </android.support.v4.widget.DrawerLayout>
-</AbsoluteLayout>
+</LinearLayout>

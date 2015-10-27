@@ -18,13 +18,13 @@
 	        android:layout_centerVertical="true"
 	        android:layout_marginRight="20dp"
 	        android:scaleType="fitCenter" />
-	    <com.example.myweichat.UserButton
+	    <com.example.myweichat.component.UserButton
 	        android:id="@+id/nowuser"
 	        android:layout_width="wrap_content"
 	        android:layout_height="wrap_content"
 	        android:layout_alignParentLeft="true"
 	        android:layout_centerVertical="true"
 	        android:layout_marginLeft="5dp">
-	    </com.example.myweichat.UserButton>
+	    </com.example.myweichat.component.UserButton>
 	</RelativeLayout>  
 </LinearLayout>

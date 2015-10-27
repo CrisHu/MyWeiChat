@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<animation-list xmlns:android="http://schemas.android.com/apk/res/android"
+    android:oneshot="false">
+    <item android:drawable="@drawable/bibi1" android:duration="100"/>
+    <item android:drawable="@drawable/bibi2" android:duration="100"/>
+    <item android:drawable="@drawable/bibi3" android:duration="100"/>
+    <item android:drawable="@drawable/bibi4" android:duration="100"/>
+    <item android:drawable="@drawable/bibi5" android:duration="100"/>
+    <item android:drawable="@drawable/bibi6" android:duration="100"/>
+    <item android:drawable="@drawable/bibi7" android:duration="100"/>
+    <item android:drawable="@drawable/bibi8" android:duration="100"/>
+    <item android:drawable="@drawable/bibi9" android:duration="100"/>
+    <item android:drawable="@drawable/bibi10" android:duration="100"/>
+    <item android:drawable="@drawable/bibi11" android:duration="100"/>
+    <item android:drawable="@drawable/bibi12" android:duration="100"/>
+    <item android:drawable="@drawable/bibi13" android:duration="100"/>
+    <item android:drawable="@drawable/bibi14" android:duration="100"/>
+    <item android:drawable="@drawable/bibi15" android:duration="100"/>
+    <item android:drawable="@drawable/bibi16" android:duration="100"/>
+    <item android:drawable="@drawable/bibi17" android:duration="100"/>
+    <item android:drawable="@drawable/bibi18" android:duration="100"/>
+</animation-list>

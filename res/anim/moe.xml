@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<animation-list xmlns:android="http://schemas.android.com/apk/res/android"
+    android:oneshot="false">
+    <item android:drawable="@drawable/moe1" android:duration="100"/>
+    <item android:drawable="@drawable/moe2" android:duration="100"/>
+    <item android:drawable="@drawable/moe3" android:duration="100"/>
+    <item android:drawable="@drawable/moe4" android:duration="100"/>
+    <item android:drawable="@drawable/moe5" android:duration="100"/>
+    <item android:drawable="@drawable/moe6" android:duration="100"/>
+    <item android:drawable="@drawable/moe7" android:duration="100"/>
+    <item android:drawable="@drawable/moe8" android:duration="100"/>
+    <item android:drawable="@drawable/moe9" android:duration="100"/>
+    <item android:drawable="@drawable/moe10" android:duration="100"/>
+    <item android:drawable="@drawable/moe11" android:duration="100"/>
+    <item android:drawable="@drawable/moe12" android:duration="100"/>
+    <item android:drawable="@drawable/moe13" android:duration="100"/>
+    <item android:drawable="@drawable/moe14" android:duration="100"/>
+    <item android:drawable="@drawable/moe15" android:duration="100"/>
+    <item android:drawable="@drawable/moe16" android:duration="100"/>
+    <item android:drawable="@drawable/moe17" android:duration="100"/>
+    <item android:drawable="@drawable/moe18" android:duration="100"/>
+</animation-list>

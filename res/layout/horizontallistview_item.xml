@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/rl"
+    android:layout_width="150dip"
+    android:layout_height="100dip" >
+    
+    <ImageView
+        android:id="@+id/girl22or33"
+        android:layout_width="100dip"
+        android:layout_height="100dip"
+        android:scaleType="fitXY"/>
+
+</RelativeLayout>

@@ -6,12 +6,11 @@
 	<LinearLayout 
 	    android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_x="0dp" 
-        android:layout_y="0dp">
-	    <TextView  
-	        android:layout_width="match_parent"  
-	        android:layout_height="match_parent"  
-	        android:gravity="center"  
+        android:orientation="vertical">
+	    <ToggleButton  
+	        android:layout_width="wrap_content"  
+	        android:layout_height="wrap_content"  
+        android:layout_gravity="center"
 	        android:text="WeiChat's MAIN "  
 	        android:textSize="20sp"  
 	        android:textStyle="bold" /> 

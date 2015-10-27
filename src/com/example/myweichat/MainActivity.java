@@ -7,6 +7,18 @@ import java.util.List;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import com.example.myweichat.adapter.PageAdapter;
+import com.example.myweichat.component.BottomButton;
+import com.example.myweichat.component.UserDetail;
+import com.example.myweichat.controller.StyleController;
+import com.example.myweichat.controller.Utils;
+import com.example.myweichat.controller.WROperation;
+import com.example.myweichat.mainfragment.AddressBookF;
+import com.example.myweichat.mainfragment.DiscoveryF;
+import com.example.myweichat.mainfragment.TitleF;
+import com.example.myweichat.mainfragment.WeiChatF;
+import com.example.myweichat.mainfragment.MEF;
+
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -37,38 +49,42 @@ public class MainActivity extends FragmentActivity implements OnClickListener,Ti
 	private WeiChatF WCF;
 	private MEF MEF;
 	private GestureDetector mGestureDetector; 
-	private RelativeLayout refresh;
-	private ViewPager mViewPager;
+	private static RelativeLayout refresh;
+	protected static ViewPager mViewPager;
 	private BottomButton bbme,bbd,bbab,bbwc;
 	private PageAdapter mPageAdapter;
 	private DrawerLayout userDetail = null;
 	private UserDetail userdetail;
 	private DisplayMetrics dm;
-	private int window_width,window_height,refresh_height;
-	private int defaultheight = 200,maxheight = 1500;//触发刷新所需要的最小滑动距离/最大可接受滑动距离
+	public static int window_width;
+	public static int window_height;
+	private int defaultheight = 200,maxheight = 1500,refresh_height;//触发刷新所需要的最小滑动距离/最大可接受滑动距离
 	private List<Fragment> LF = new ArrayList<Fragment>();
-	private int state = 0,firstanim = 0,freshisanimating = 0,canrefresh = 1;
+	public static int state = 0,firstanim = 0,canrefresh = 1,HELP_STATE = 4;
+	public static int dorefresh,freshisanimating;
 	private int[] img = {R.drawable.weixin,R.drawable.addressbook,R.drawable.discovery,R.drawable.app};
 	private int[] imgon = {R.drawable.onweixin,R.drawable.onaddressbook,R.drawable.ondiscovery,R.drawable.onapp};
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState){
-		//this.overridePendingTransition(R.anim.activity_open,0);  
 		Utils.onActivityCreateSetTheme(this);  
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_main);
 		dm = new DisplayMetrics();
 		getWindowManager().getDefaultDisplay().getMetrics(dm);
 		window_width = dm.widthPixels;
 		window_height = dm.heightPixels;
-		initTitleF();
+		dorefresh = 1;
+		freshisanimating = 0;
+		setContentView(R.layout.activity_main);
 		initComponent();
+		initTitleF();
 		initViewPager();
 		mGestureDetector = new GestureDetector((OnGestureListener) this);
 		Intent sthstate = getIntent();
 		if(Utils.ButtonState != 0 && sthstate.getStringExtra("BottomButton") != null){
-			if(Integer.parseInt(sthstate.getStringExtra("BottomButton")) != 0)
+			if(Integer.parseInt(sthstate.getStringExtra("BottomButton")) != HELP_STATE)
 				firstanim = 1;
+			state = HELP_STATE;    //置为不存在，帮助刷新
 			onClick(findViewById(returnId(Integer.parseInt(sthstate.getStringExtra("BottomButton")))));
 		}
 	}
@@ -97,11 +113,19 @@ public class MainActivity extends FragmentActivity implements OnClickListener,Ti
 	    refresh = (RelativeLayout)findViewById(R.id.refresh);
 	    refresh.setVisibility(View.INVISIBLE);
 	    refresh.getLayoutParams().height=(int) (1.2*window_height/13.4);
+	    //AbsoluteLayout 布局修改
 	    refresh_height = refresh.getLayoutParams().height;
+	    findViewById(R.id.fragmenttitle).getLayoutParams().height = refresh_height;
+	    findViewById(R.id.fragmenttitle).layout(0,0, refresh.getRight(),refresh_height);
+	    findViewById(R.id.fragment).getLayoutParams().height = (int) (refresh_height * 11 / 1.2);
+	    findViewById(R.id.fragment).setX(0);
+	    findViewById(R.id.fragment).setY(findViewById(R.id.fragmenttitle).getHeight());
+	    refresh.bringToFront();
+	    findViewById(R.id.fragmenttitle).bringToFront();
 	}
 	
 	protected void initTitleF(){
-		StyleController.setobjectsrc(TitleF.IB, getResources().getDrawable(R.drawable.switchtonight));
+		StyleController.setobjectsrc(TitleF.IB, R.drawable.switchtonight);
 		setSwitchButton(TitleF.IB);
 		userDetail = (DrawerLayout) findViewById(R.id.userdetail);
 		userDetail.setDrawerListener(this);
@@ -123,15 +147,20 @@ public class MainActivity extends FragmentActivity implements OnClickListener,Ti
 	}
 	
 	protected void ReadytoRefresh(int rstate,final int id){
-		if(rstate != 3)MEF.closeAll();
-		refresh.clearAnimation();
-		refresh.setVisibility(View.INVISIBLE);
+		if(refresh.getAnimation() != null){
+		refresh.getAnimation().cancel();
 		freshisanimating = 0;
+		canrefresh = 0;
+		refresh.setVisibility(View.INVISIBLE);
+	}
 		mViewPager.setCurrentItem(rstate,false);
 		StyleController.setobjectsrc(findViewById(id),getResources().getDrawable(imgon[rstate]));
 		StyleController.setobjectsrc(findViewById(id),R.style.BottonButtonOn);
         Refresh(id);
         freshAnim(id);
+		if(rstate != 3)MEF.closeAll();
+		if(rstate != 2)DF.galleryStop();
+		else DF.galleryStart();
 	}
 	
 	public void freshAnim(final int id){
@@ -202,32 +231,12 @@ public class MainActivity extends FragmentActivity implements OnClickListener,Ti
 		return id;
 	}
 	
-//	protected void dialog() {
-//		Toast.makeText(this, "如要返回请再次确认", Toast.LENGTH_LONG);
-//		if (keyCode == KeyEvent.KEYCODE_BACK && new KeyEvent().getRepeatCount() == 0)
-//		AlertDialog.Builder builder = new Builder(MainActivity.this);
-//		builder.setMessage("EXIT?");
-//		builder.setTitle("WARNING");
-//		builder.setNegativeButton("EXIT",new DialogInterface.OnClickListener(){
-//			@Override
-//			public void onClick(DialogInterface dialog, int which){
-//				dialog.dismiss();
-//				Utils.ButtonState = 0;
-//				finish();
-//			}
-//		 });
-//		builder.setPositiveButton("WAIT!",new DialogInterface.OnClickListener(){
-//			@Override
-//			public void onClick(DialogInterface dialog, int which){
-//				dialog.dismiss();
-//			}
-//	 });
-//		builder.create().show();
-//	}
-//	 
 	public boolean onKeyDown(int keyCode, KeyEvent event){
 		if (keyCode == KeyEvent.KEYCODE_BACK && event.getRepeatCount() == 0 && userDetail.isDrawerOpen(userdetail))userDetail.closeDrawers();
-		else finish();
+		else {
+			state = 0;
+			finish();
+		}
 		return false;
 	}
 	
@@ -241,9 +250,9 @@ public class MainActivity extends FragmentActivity implements OnClickListener,Ti
 	}
 	public void setSwitchButton(ImageView iv){
 		if(Utils.sTheme == 2)
-			StyleController.setobjectsrc(iv, getResources().getDrawable(R.drawable.switchtodaily));
+			StyleController.setobjectsrc(iv, R.drawable.switchtodaily);
 		else
-			StyleController.setobjectsrc(iv, getResources().getDrawable(R.drawable.switchtonight));
+			StyleController.setobjectsrc(iv, R.drawable.switchtonight);
 	}
 
 	public void doActionUp(){
@@ -275,9 +284,15 @@ public class MainActivity extends FragmentActivity implements OnClickListener,Ti
 				@Override
 				public void onAnimationEnd(Animation animation)
 				{
-					refresh.clearAnimation();
-					refresh.setVisibility(View.INVISIBLE);
 					freshisanimating = 0;
+					refresh.clearAnimation();
+					refresh.layout(refresh.getLeft(),0,refresh.getRight(),refresh_height);
+					refresh.setVisibility(View.INVISIBLE);
+					if(dorefresh == 1){
+						if(state == 2)DF.galleryStop();
+						mViewPager.getAdapter().notifyDataSetChanged();
+						PageAdapter.i = 0;
+					}
 				}
 				@Override
 				public void onAnimationRepeat(Animation animation)
@@ -286,7 +301,6 @@ public class MainActivity extends FragmentActivity implements OnClickListener,Ti
 				@Override
 				public void onAnimationStart(Animation animation)
 				{
-					//刷新代码
 				}
 			});
 			return;
@@ -316,28 +330,42 @@ public class MainActivity extends FragmentActivity implements OnClickListener,Ti
 				{
 				}
 			});
+			return;
 		}
+		refresh.setVisibility(View.INVISIBLE);
 	}
 	public void doActionDown(){
 		if(freshisanimating == 0)
 			canrefresh = 1;
 	}
 	public void dorefresh(int dis){
-		  if(canrefresh == 1){
+		  if(canrefresh == 1 && state != 3){
+			  if(dis > 10)
+				  refresh.setVisibility(View.VISIBLE);
 			  dis = (int) Math.sqrt((maxheight * maxheight - Math.pow((dis - defaultheight - maxheight),2)))/5;
 			  refresh.layout(refresh.getLeft(),dis, refresh.getRight(),dis + refresh_height);
 		  }
+	}
+	
+	public static void interruptrefresh(){
+		if(refresh.getAnimation() != null){
+			dorefresh = 0;
+			refresh.getAnimation().cancel();
+			canrefresh = 0;
+			freshisanimating = 0;
+			refresh.setVisibility(View.INVISIBLE);
+		}
 	}
 	
 	@Override
 	public void switchdorn() {
 		// TODO Auto-generated method stub
 		if(Utils.sTheme == 2){
-		   StyleController.setobjectsrc(TitleF.IB, getResources().getDrawable(R.drawable.switchtodaily));
+		   StyleController.setobjectsrc(TitleF.IB, R.drawable.switchtodaily);
 		   Utils.sTheme = 1;
 		}
 		else{
-			StyleController.setobjectsrc(TitleF.IB, getResources().getDrawable(R.drawable.switchtonight));
+			StyleController.setobjectsrc(TitleF.IB, R.drawable.switchtonight);
 			Utils.sTheme = 2; 
 		}
 		
@@ -354,7 +382,9 @@ public class MainActivity extends FragmentActivity implements OnClickListener,Ti
 	@Override
 	public void userDetail() {
 		// TODO Auto-generated method stub
-		refresh.clearAnimation();
+		if(refresh.getAnimation() != null){
+			refresh.getAnimation().cancel();
+		}
 		refresh.setVisibility(View.INVISIBLE);
 		freshisanimating = 0;
 		Animation userdetaillistanim = AnimationUtils.loadAnimation(this,R.anim.user_detail_drawer_apperance); 
@@ -406,18 +436,25 @@ public class MainActivity extends FragmentActivity implements OnClickListener,Ti
 	}
 	@Override
 	public void onDrawerSlide(View arg0, float arg1) {
+		StyleController.setobjectsrc(UserDetail.imageviewbili, R.drawable.bili_up);
+		interruptrefresh();
 	}
 	@Override
 	public void onDrawerStateChanged(int arg0) {
+		canrefresh = 1;
+		dorefresh = 1;
 	}
 	
 	@Override
 	public void onPageScrollStateChanged(int arg0) {
 		if(arg0 == 2 && mViewPager.getCurrentItem() != state)
 			ReadytoRefresh(mViewPager.getCurrentItem(),returnId(mViewPager.getCurrentItem()));
+		canrefresh = 1;
+		dorefresh = 1;
 	}
 	@Override
 	public void onPageScrolled(int arg0, float arg1, int arg2) {
+		interruptrefresh();
 	}
 	@Override
 	public void onPageSelected(int arg0) {
@@ -438,8 +475,8 @@ public class MainActivity extends FragmentActivity implements OnClickListener,Ti
 	@Override
 	public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX,
 			float distanceY){
-		refresh.setVisibility(View.VISIBLE);
-		dorefresh((int)(e2.getY() - e1.getY()));
+		if(e2 != null && e1 != null)
+			dorefresh((int)(e2.getY() - e1.getY()));
 		return false;
 	}
 	@Override
